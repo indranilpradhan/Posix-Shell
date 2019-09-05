@@ -1,0 +1,5 @@
+HOME=/home/indranil
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+USER=indranil
+HOSTNAME=indranil-HP-Laptop-15g-dr0xxx
+PS1=indranil-HP-Laptop-15g-dr0xxx@indranil
