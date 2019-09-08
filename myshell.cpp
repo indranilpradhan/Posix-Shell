@@ -101,11 +101,10 @@ void getcommand(char command[],char *parameter[],char cmdpara[],char global[])
         {
           t = strtok(NULL," ");
       //    cout<<"t "<<t<<endl;
-          if(t == NULL)
-            break;
           newa[l++] = t;
           //cout<<"here"<<endl;
         }
+        --l;
         //newa[l] = NULL;
         for(int n =1;n<i;n++)
         {
