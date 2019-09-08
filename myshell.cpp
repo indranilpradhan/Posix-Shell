@@ -608,6 +608,17 @@ int main() {
         }
         else if(strcmp(command,"alias") == 0)
         {
+    //      cout<<"here"<<endl;
+      //    cout<<"alias "<<command<<endl;
+          if(strlen(cmdpara) == 0 || strcmp(cmdpara,"-p") == 0)
+          {
+            for(auto it = alias.begin();it != alias.end(); it++)
+            {
+              cout<<"alias "<<it->first<<"="<<"'"<<it->second<<"'"<<endl;
+            }
+          }
+          else
+          {
           char *key;
           char value[1000];
       //    cout<<"command "<<command<<endl;
@@ -642,10 +653,25 @@ int main() {
             alias.insert(pair<string, string>(key,value));
           else
             alias[key] = value;
-  //        for(auto it = alias.begin();it != alias.end(); it++)
-    //      {
-      //      cout<<"map "<<it->first<<" "<<it->second;
-        //  }
+          }
+        }
+        else if(strcmp(command,"unalias") == 0)
+        {
+      //    cout<<"command "<<command<<endl;
+      //    cout<<"cmdpara "<<cmdpara<<endl;
+          if(strcmp(cmdpara,"-a") ==0)
+          {
+            alias.clear();
+          }
+          else
+          {
+            map<string, string>::iterator it;
+            it = alias.find(cmdpara);
+            if(it != alias.end())
+            {
+              alias.erase(it);
+            }
+          }
         }
         else if(strcmp(command,"cd") == 0)
         {
