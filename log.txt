@@ -1,0 +1,9 @@
+record start 
+record start ls 
+ls -l 
+record stop 
+record start 
+record start pwd 
+cat log.txt 
+cat log.txt 
+cat log.txt | sort | uniq 
