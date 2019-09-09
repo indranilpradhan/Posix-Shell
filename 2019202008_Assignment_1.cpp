@@ -1,5 +1,4 @@
 #include<stdio.h>
-#include<string.h>
 #include<stdlib.h>
 #include<unistd.h>
 #include<sys/types.h>
@@ -20,6 +19,7 @@ int root = 0;
 int len = 0;
 int flag = 0;
 map<string, string> alias;
+map<string, string> echovalue;
 
 void getcommand(char command[],char *parameter[],char cmdpara[],char global[])
 {
@@ -28,44 +28,37 @@ void getcommand(char command[],char *parameter[],char cmdpara[],char global[])
     int i = 0;
     int j = 0;
     char *a[1000], *b, *newa[1000];
-
     while(1)
     {
       int p = fgetc(stdin);
-      //count=0;
       input[count++] = (char) p;
       if( p == '\n')
         break;
     }
+    input[count] = '\0';
     if(count == 1)
     return;
 
     b = strtok(input," \n");
     i=0;
-    //delete [] input;
     while(b != NULL)
     {
       a[i++] = strdup(b);
-      //global[k++] = a[i];
       b = strtok(NULL," \n");
     }
+    a[i]=NULL;
     len = i;
     if(strcmp(a[0],"sudo")==0 || strcmp(a[0],"su")==0)
     {
       sudo = a[0];
       root = 1;
       strcpy(command,a[1]);
-//      cout<<"i "<<i<<endl;
       for(int j = 1;j<i; j++)
       {
-  //      cout<<"a "<<a[j]<<endl;
         parameter[j-1] = a[j];
       }
-  //    cout<<"para "<<sizeof(parameter)<<endl;
-      //parameter[j]=NULL;
       for(int j = 2;j<i; j++)
       {
-    //   cout<<a[j];
         strcat(cmdpara,a[j]);
         strcat(cmdpara," ");
       }
@@ -74,38 +67,27 @@ void getcommand(char command[],char *parameter[],char cmdpara[],char global[])
         strcat(global,a[k]);
         strcat(global," ");
       }
+      cmdpara[strlen(cmdpara)-1] = '\0';
     }
     else
     {
       map<string , string> :: iterator it;
-  //    cout<<"a "<<a[0]<<endl;
       string str(a[0]);
-    //  cout<<"str "<<str<<endl;
-  //    cout<<"len "<<strlen(a[0])<<endl;
       it = alias.find(str);
-//      for(auto it1 = alias.begin();it1 != alias.end(); it1++)
-  //    {
-    //      cout<<"map 84 "<<it1->first<<" "<<it1->second<<endl;
-    //  }
-    //  cout<<"it "<<it->first<<endl;
       if(it != alias.end())
       {
-    //    cout<<"89"<<endl;
         char temp[1000];
-  //      cout<<"it 94 "<<it->second<<endl;
         strcpy(temp,(it->second).c_str());
         char* t = strtok(temp," ");
         newa[0]=t;
         int l =1;
         while(t != NULL)
+
         {
           t = strtok(NULL," ");
-      //    cout<<"t "<<t<<endl;
           newa[l++] = t;
-          //cout<<"here"<<endl;
         }
         --l;
-        //newa[l] = NULL;
         for(int n =1;n<i;n++)
         {
           newa[l-1+n] = a[n];
@@ -113,7 +95,6 @@ void getcommand(char command[],char *parameter[],char cmdpara[],char global[])
         len = l-1+i;
         for(int k=0;k<len;k++)
         {
-      //    cout<<"ak "<<newa[k]<<endl;
           strcat(global,newa[k]);
           strcat(global," ");
         }
@@ -153,7 +134,7 @@ void getcommand(char command[],char *parameter[],char cmdpara[],char global[])
     //parameter[j]=NULL;
         for(int j = 1;j<i; j++)
         {
-  //   cout<<a[j];
+   //   cout<<a[j];
           strcat(cmdpara,a[j]);
           strcat(cmdpara," ");
         }
@@ -169,6 +150,10 @@ void getcommand(char command[],char *parameter[],char cmdpara[],char global[])
 //        cout<<"cmdpara "<<cmdpara<<endl;
       }
     }
+  /*  cout<<"command 174 "<<command<<endl;
+    cout<<"cmdpara 175 "<<cmdpara<<endl;
+    cout<<"length cmdpara "<<strlen(cmdpara)<<endl;
+    cout<<"global "<<global<<endl; */
 }
 
 int main() {
@@ -177,29 +162,31 @@ int main() {
   //  char *parameter[200];
     char reading[10000];
   //  char cmdpara[10000];
-    char *home;
-    char *key;
-    char *value;
-    char *b;
+    char * home;
+    char * key;
+    char * value;
+    char * b;
     getcwd(directory,sizeof(directory));
     char *environment[] = {(char*) "PATH=/bin", 0};
   //  char* prompt = getenv("HOME");
-    FILE *fp = fopen(".resourcerc","r");
+    FILE *fp3 = fopen(".resourcerc","r");
     struct passwd *pw = getpwuid(getuid());
-    while(fgets(reading, sizeof(reading),fp))
+    while(fgets(reading, sizeof(reading),fp3))
     {
       key = strtok(reading,"=");
       value = strtok(NULL,"=");
+  //    cout<<"key "<<key<<endl;
+    //  cout<<"value "<<value<<endl;
       setenv(key,value,1);
     }
+  //  fflush(fp3);
+    fclose(fp3);
     string ps1 = "";
-  //  char hispath[1024];
-  //  strcat(hispath,"history.txt");
-  //  signal(SIGINT, SIG_IGN);
-    //signal(SIGINT, handle_signal);
 
     while(1)
     {
+      fflush(stdin);
+      fflush(stdout);
       char command[100];
       char cmd[100];
       char *parameter[200];
@@ -210,6 +197,7 @@ int main() {
       char *rcmd;
       char *pcmd;
       char *parg;
+      char *cpycmdpara;
       int status;
       char global[1000];
       if(root==0)
@@ -225,8 +213,20 @@ int main() {
         cout<<ps1<<">>";
       }
       getcommand(command,parameter,cmdpara,global);
+    /*  FILE *fp4 = fopen(".resourcerc","r");
+      while(fgets(reading, sizeof(reading),fp4))
+      {
+        key = strtok(reading,"=");
+        value = strtok(NULL,"=");
+        if(strcmp(key,"PS1") != 0 || strcmp(key,"HOME") != 0 || strcmp(key,"USER") != 0 || strcmp(key,"HOSTNAME") != 0 || strcmp(key,"PATH") != 0)
+          setenv(key,value,1);
+      }
+    //  fflush(fp4);
+      fclose(fp4); */
     //  freopen("log.txt", "w", stdout);
-
+  //  cout<<"command 241 "<<command<<endl;
+  //  cout<<"cmdpara 242 "<<cmdpara<<endl;
+  //  cout<<"length cmdpara "<<strlen(cmdpara)<<endl;
     if(strstr(command,"record"))
     {
       if(strstr(cmdpara,"start"))
@@ -235,9 +235,10 @@ int main() {
     if(flag == 1)
     {
       char buf[1000];
-      FILE *fp = fopen("log.txt","a+");
-      fprintf (fp,"%s\n",global);
-      fflush(fp);
+      FILE *fp1 = fopen("log.txt","a+");
+      fprintf (fp1,"%s\n",global);
+  //    fflush(fp1);
+      fclose(fp1);
   //    ofstream outFile("myfile.out", ios::out);
     //  outfile<<stdout;
   //  cout<<stdout<<endl;
@@ -313,6 +314,7 @@ int main() {
       //          cout<<"tempo "<<*temparg<<endl;
                 dup2(nextfd,0);
                 if (k+1 != i) {
+                  //cout<<k<<endl;
                   dup2(filed[1],1);
                 }
                 close(filed[0]);
@@ -500,6 +502,8 @@ int main() {
         wait(NULL);
       else
       {
+      //  cout<<"command 511 "<<command<<endl;
+      //  cout<<"cmdpara 512 "<<cmdpara<<endl;
         if(strstr(command,"record"))
         {
           int exitstatus;
@@ -581,29 +585,49 @@ int main() {
         }
         else
         {
+        //  cout<<"here"<<endl;
         if(strcmp(command,"echo") ==0)
         {
-          if(strstr(cmdpara,"$"))
+          if(strcmp(cmdpara,"$$") == 0)
           {
-            if(strcmp(cmdpara,"$$") == 0)
-            {
-              cout<<(long)getpid()<<endl;
-            }
-            else if(strcmp(cmdpara,"$?") == 0)
-            {
-              cout<<status<<endl;
-            }
-            else
-            {
-              ech=strtok(cmdpara,"$");
-              cout<<getenv(ech)<<endl;
-            }
+            //cout<<"here"<<endl;
+            cout<<(long)getpid()<<endl;
           }
           else
           {
-            strcpy(cmd, "/bin/");
-            strcat(cmd, command);
-            execve(cmd,parameter,environment);
+          map<string, string>::iterator it;
+          ech=strtok(cmdpara,"$");
+          ech=strtok(ech," ");
+          //cout<<"ech "<<strlen(ech)<<endl;
+          it = echovalue.find(ech);
+          if(it != echovalue.end())
+          {
+            cout<<it->second<<endl;
+          }
+          else
+          {
+            if(strstr(cmdpara,"$"))
+            {
+        //      cout<<"cmdpara "<<cmdpara<<endl;
+               if(strcmp(cmdpara,"$?") == 0)
+              {
+                cout<<status<<endl;
+              }
+              else
+              {
+          //      ech=strtok(cmdpara,"$");
+            //    ech=strtok(ech," ");
+                cout<<getenv(ech)<<endl;
+              }
+            }
+            else
+            {
+            //cout<<cmdpara<<endl;
+              strcpy(cmd, "/bin/");
+              strcat(cmd, command);
+              execve(cmd,parameter,environment);
+            }
+          }
           }
         }
         else if(strcmp(command,"alias") == 0)
@@ -673,6 +697,72 @@ int main() {
             }
           }
         }
+        else if(strcmp(command,"export") == 0 && strstr(cmdpara,"="))
+        {
+          char exp[1000];
+          char *key;
+          char *value;
+      //    cout<<"cmdpara "<<cmdpara<<endl;
+          strcpy(exp,cmdpara);
+      //    cout<<"cmdpara "<<cmdpara<<endl;
+        //  cout<<"global "<<global<<endl;
+          key = strtok(cmdpara,"=");
+        //  value = strtok(cmdpara,"=");
+          value = strtok(NULL,"=");
+        ///  cout<<"value "<<value<<endl;
+        //  cout<<"key "<<key<<endl;
+        //cout<<"cmdpara "<<exp<<endl;
+          setenv(key,value,1);
+          FILE *fp2 = fopen(".resourcerc","a+");
+          fprintf (fp2,"%s\n",exp);
+    //      fflush(fp2);
+          fclose(fp2);
+        }
+        else if(strcmp(command,"export") == 0 && !strstr(cmdpara,"="))
+        {
+          char key[1000];
+          char temp[1000];
+          char n1[1000];
+          char n2[1000];
+      //    cout<<"command "<<command<<endl;
+      //    cout<<"cmdpara "<<cmdpara<<endl;
+          map<string, string>::iterator it;
+          it = echovalue.find(cmdpara);
+          if(it != echovalue.end())
+          {
+            strcpy(temp,(it->second).c_str());
+        //    cout<<"here"<<endl;
+            strcpy(key,cmdpara);
+            strcat(key,"=");
+            strcat(key,temp);
+            echovalue.erase(it);
+            strcpy(n1,cmdpara);
+            strcpy(n2,temp);
+        //    cout<<"n1 "<<n1<<endl;
+        //    cout<<"n2 "<<n2<<endl;
+            setenv(n1,n2,1);
+      //      cout<<"key "<<key<<endl;
+            FILE *fp5 = fopen(".resourcerc","a+");
+            fprintf (fp5,"%s\n",key);
+            fclose(fp5);
+          }
+        }
+        else if(strstr(cmdpara,"=") && !strstr(command,"alias") && !strstr(command,"export"))
+        {
+          char* key;
+          char* value;
+          key = strtok(command, " ");
+          value  = strtok(cmdpara,"=");
+          value = strtok(value," ");
+    //      cout<<"key "<<key<<endl;
+    //      cout<<"value "<<value<<endl;
+          echovalue[key] = value;
+          map<string,string>::iterator it;
+         for(it = echovalue.begin();it != echovalue.end(); it++)
+         {
+            cout<<it->first<<" "<<it->second<<endl;
+          }
+        }
         else if(strcmp(command,"cd") == 0)
         {
           if(strlen(cmdpara) == 0)
@@ -692,10 +782,24 @@ int main() {
             getcwd(directory,sizeof(directory));
           }
         }
+        else if(strcmp(command,"exit")==0)
+        {
+          if(root==0)
+          {
+            exit(1);
+          }
+          else
+          {
+            ps1 = (string)getenv("PS1");
+            ps1 = ps1 + directory;
+          //  cout<<ps1<<">>";
+            root =0;
+          }
+        }
         else
         {
         //   cout<<"comdpara else "<<strlen(cmdpara)<<endl;
-          //  cout<<"command else "<<strlen(command)<<endl;
+        //    cout<<"command else "<<strlen(command)<<endl;
             strcpy(cmd, "/bin/");
             strcat(cmd, command);
             execve(cmd,parameter,environment);
@@ -704,21 +808,15 @@ int main() {
         int exitstatus;
         waitpid((long)getpid(),&exitstatus,0);
         status = WEXITSTATUS(exitstatus);
+        fflush(stdin);
+        fflush(stdout);
+        memset(cmdpara, 0, sizeof(cmdpara));
+        memset(command, 0, sizeof(command));
+        memset(parameter, 0, sizeof(parameter));
+        memset(cmd, 0, sizeof(cmd));
+        memset(global,0, sizeof(global));
       }
-      if(strcmp(command,"exit")==0)
-      {
-        if(root==0)
-        {
-          exit(1);
-        }
-        else
-        {
-          ps1 = (string)getenv("PS1");
-          ps1 = ps1 + directory;
-        //  cout<<ps1<<">>";
-          root =0;
-        }
-      }
+
       memset(cmdpara, 0, sizeof(cmdpara));
       memset(command, 0, sizeof(command));
       memset(parameter, 0, sizeof(parameter));
