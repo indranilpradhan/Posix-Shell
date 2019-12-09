@@ -16,7 +16,9 @@ chdir , open, close, readline, gets, fgets, getchar, signal
 ● Files permissions and ownership in *nix or derived systems.
 ● alarm() posix function.
 ● Prompt and it’s meaning for each field, E.g. user@ubuntu:~$
-DONT 's
+
+DONT 's --
+
 1. No menu driven programs.
 2. Do not use system() function.
 3. You do not have to make any commands yourself. See /bin
@@ -29,7 +31,9 @@ prompt string and format of displaying output from your process,
 keep it clean. Functionality is important.
 7. Avoid naming anything as test or something which clashes with
 internally existing tools or keywords.
-Syntax
+
+Syntax --
+
 1. IO redirection with ‘>>’ and ‘>’ will be done for one source and
 one destination only.
 2. For ‘|’, a minimum 3 programs must be in pipe. E.g. c at file1.txt
@@ -37,7 +41,9 @@ one destination only.
 3. Prompt must change for distinguishing users($)@hostname and
 root(#)@hostname and also while searching in extended features.
 Implementation Requirements
-Shell Internals
+
+Shell Internals  --
+
 1. Your program must be an input driven independent executable, no
 menu options are to be provided. It can take n number of strings
 in the format of a command following with its parameters itself.
@@ -56,7 +62,9 @@ PATH, HOME, USER, HOSTNAME, PS1 .
 7. Look of prompt via PS1 is to be handled.
 8. Alias support for commands. E.g. alias ll='ls -l'.
 9. Handle support for - $$, $? Similar to shell.
-Extended Features ( NOT OPTIONAL )
+
+Extended Features --
+
 1. Recording as script command, where a user can initiate recording
 of all input and output to a file, this happens in the
 background. It will be invoked as record start and record stop.
